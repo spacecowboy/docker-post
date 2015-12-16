@@ -1,0 +1,26 @@
+FROM debian:jessie
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get -q update
+RUN apt-get -qy upgrade
+RUN apt-get -qy remove exim4
+RUN apt-get -qy install dovecot-lmtpd dovecot-pgsql \
+                        dovecot-managesieved dovecot-sieve \
+                        dovecot-imapd
+RUN apt-get autoclean && rm -rf /var/lib/apt/lists/*
+
+# Dovecot needs to run as its own user, here called 'vmail'
+RUN adduser --system --no-create-home --uid 500 --group --disabled-password \
+            --disabled-login --gecos 'dovecot virtual mail user' vmail
+
+# Mail is stored under /var/vmail/domain/user/mail
+# with user specific stuff in /var/vmail/domain/user
+
+COPY dovecot.conf /etc/dovecot/dovecot.conf
+COPY dovecot-sql.conf /etc/dovecot/dovecot-sql.conf
+
+RUN doveconf -n
+
+# Should run Dovecot, then follow logs
+CMD dovecot && tail -f /var/log/dovecot.log
