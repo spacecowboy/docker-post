@@ -19,6 +19,8 @@ RUN adduser --system --no-create-home --uid 500 --group --disabled-password \
 
 COPY dovecot.conf /etc/dovecot/dovecot.conf
 COPY dovecot-sql.conf /etc/dovecot/dovecot-sql.conf
+RUN mkdir -p /etc/dovecot/sieve-filters
+COPY gpgit /etc/dovecot/sieve-filters/gpgit
 
 RUN doveconf -n
 
