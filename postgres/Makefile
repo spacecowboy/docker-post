@@ -14,18 +14,27 @@ db:
 
 tables:
 	sudo docker exec -it postgres \
+	  psql mail -c "CREATE TABLE domains ( \
+					  id SERIAL PRIMARY KEY, \
+					  domain VARCHAR(50) UNIQUE NOT NULL \
+					);"
+
+	sudo docker exec -it postgres \
 	  psql mail -c "CREATE TABLE users ( \
-					  email VARCHAR(50) PRIMARY KEY, \
+					  id SERIAL PRIMARY KEY, \
 					  name VARCHAR(50) NOT NULL, \
-					  domain VARCHAR(50) NOT NULL, \
-					  password VARCHAR(50) NOT NULL \
+					  domain VARCHAR(50) REFERENCES domains (domain) ON DELETE CASCADE ON UPDATE CASCADE, \
+					  password VARCHAR(50) NOT NULL, \
+					  UNIQUE (name, domain)
 					);"
 
 	sudo docker exec -it postgres \
 	  psql mail -c "CREATE TABLE alias ( \
-					  email VARCHAR(50) PRIMARY KEY, \
-					  aka VARCHAR(50) REFERENCES users ON DELETE CASCADE \
-					                                   ON UPDATE CASCADE \
+					  id SERIAL PRIMARY KEY, \
+					  name VARCHAR(50) NOT NULL, \
+					  domain VARCHAR(50) REFERENCES domains (domain) ON DELETE CASCADE ON UPDATE CASCADE, \
+					  aka_user INT REFERENCES users ON DELETE CASCADE, \
+					  UNIQUE (name, domain)
 					);"
 mailuser:
 	sudo docker exec -it postgres \
@@ -36,14 +45,18 @@ mailuser:
 
 example:
 	sudo docker exec -it postgres \
-	  psql mail -c "INSERT INTO users (email, name, domain, password) \
-					  VALUES ('bob@example.com', 'bob', 'example.com', 'abc');"
+	  psql mail -c "INSERT INTO domains (domain) \
+					  VALUES ('example.com');"
 
 	sudo docker exec -it postgres \
-	  psql mail -c "INSERT INTO alias (email, aka) \
-					  VALUES ('bob.smith@example.org', 'bob@example.com');"
+	  psql mail -c "INSERT INTO users (name, domain, password) \
+					  VALUES ('bob', 'example.com', 'abc');"
+
+	sudo docker exec -it postgres \
+	  psql mail -c "INSERT INTO alias (name, domain, aka_user) \
+					  VALUES ('bob.smith', 'example.com', '1');"
 
 errors:
 	sudo docker exec -it postgres \
-	  psql mail -c "INSERT INTO alias (email, aka) \
-					  VALUES ('bla', 'blabla');"
+	  psql mail -c "INSERT INTO alias (name, domain, aka_user) \
+					  VALUES ('somename', 'unknown.com', '1');"
