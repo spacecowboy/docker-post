@@ -24,7 +24,8 @@ tables:
 	sudo docker exec -it postgres \
 	  psql mail -c "CREATE TABLE alias ( \
 					  email VARCHAR(50) PRIMARY KEY, \
-					  aka VARCHAR(50) REFERENCES users \
+					  aka VARCHAR(50) REFERENCES users ON DELETE CASCADE \
+					                                   ON UPDATE CASCADE \
 					);"
 mailuser:
 	sudo docker exec -it postgres \
