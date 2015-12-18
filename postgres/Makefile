@@ -15,13 +15,11 @@ db:
 tables: db
 	sudo docker exec -it postgres \
 	  psql mail -c "CREATE TABLE domains ( \
-					  id SERIAL PRIMARY KEY, \
 					  domain VARCHAR(50) UNIQUE NOT NULL \
 					);"
 
 	sudo docker exec -it postgres \
 	  psql mail -c "CREATE TABLE users ( \
-					  id SERIAL PRIMARY KEY, \
 					  name VARCHAR(50) NOT NULL, \
 					  domain VARCHAR(50) REFERENCES domains (domain) ON DELETE CASCADE ON UPDATE CASCADE, \
 					  password VARCHAR(50) NOT NULL, \
@@ -30,7 +28,6 @@ tables: db
 
 	sudo docker exec -it postgres \
 	  psql mail -c "CREATE TABLE alias ( \
-					  id SERIAL PRIMARY KEY, \
 					  name VARCHAR(50) NOT NULL, \
 					  domain VARCHAR(50) NOT NULL, \
 					  aka_name VARCHAR(50) NOT NULL, \
