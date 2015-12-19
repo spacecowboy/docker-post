@@ -1,0 +1,28 @@
+#
+# pgsql config file for local(8) aliases(5) lookups
+#
+
+#
+# The hosts that Postfix will try to connect to
+hosts = postgres
+
+# The user name and password to log into the pgsql server.
+user = mail
+password = Cqg2amU7SY
+
+# The database name on the servers.
+dbname = mail
+
+# Postfix 2.2 and later The SQL query template. See pgsql_table(5).
+# query = SELECT forw_addr FROM mxaliases WHERE alias='%s' AND status='paid'
+# %u = bob, %d = example.com, %s = bob@example.com
+query = \
+  SELECT concat(users.name, users.domain) \
+  FROM users \
+  WHERE users.name = '%u' AND users.domain = '%d' \
+  UNION \
+  SELECT concat(users.name, users.domain) \
+  FROM users, alias \
+  WHERE users.name = alias.aka_name AND \
+        users.domain = alias.aka_domain AND \
+        alias.name = '%u' AND alias.domain = '%d'
