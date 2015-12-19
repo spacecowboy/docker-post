@@ -15,23 +15,23 @@ db:
 tables: db
 	sudo docker exec -it postgres \
 	  psql mail -c "CREATE TABLE domains ( \
-					  domain VARCHAR(50) UNIQUE NOT NULL \
+					  domain TEXT UNIQUE NOT NULL \
 					);"
 
 	sudo docker exec -it postgres \
 	  psql mail -c "CREATE TABLE users ( \
-					  name VARCHAR(50) NOT NULL, \
-					  domain VARCHAR(50) REFERENCES domains (domain) ON DELETE CASCADE ON UPDATE CASCADE, \
-					  password VARCHAR(50) NOT NULL, \
+					  name TEXT NOT NULL, \
+					  domain TEXT REFERENCES domains (domain) ON DELETE CASCADE ON UPDATE CASCADE, \
+					  password TEXT NOT NULL, \
 					  UNIQUE (name, domain) \
 					);"
 
 	sudo docker exec -it postgres \
 	  psql mail -c "CREATE TABLE alias ( \
-					  name VARCHAR(50) NOT NULL, \
-					  domain VARCHAR(50) NOT NULL, \
-					  aka_name VARCHAR(50) NOT NULL, \
-					  aka_domain VARCHAR(50) NOT NULL, \
+					  name TEXT NOT NULL, \
+					  domain TEXT NOT NULL, \
+					  aka_name TEXT NOT NULL, \
+					  aka_domain TEXT NOT NULL, \
 					  UNIQUE (name, domain), \
 					  FOREIGN KEY (aka_name, aka_domain) REFERENCES users (name, domain) ON DELETE CASCADE ON UPDATE CASCADE \
 					);"
@@ -55,7 +55,7 @@ example: db tables
 					  VALUES ('bob', 'example.com', 'abc');"
 
 	sudo docker exec -it postgres \
-	  psql mail -c "INSERT INTO alias (name, domain, aka_user, aka_domain) \
+	  psql mail -c "INSERT INTO alias (name, domain, aka_name, aka_domain) \
 					  VALUES ('bob.smith', 'example.org', 'bob', 'example.com');"
 
 errors: db tables
