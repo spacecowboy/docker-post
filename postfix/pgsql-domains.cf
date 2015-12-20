@@ -1,0 +1,7 @@
+hosts = postgres
+user = mail
+password = Cqg2amU7SY
+dbname = mail
+
+query = \
+  SELECT domain FROM domains WHERE domain = '%s'

@@ -1,22 +1,22 @@
-myhostname = mail.example.com
-mydomain = example.com
+#myhostname = mail.example.com
+#mydomain = example.com
 
 # sets the domains that postfix accepts emails for as final destination
-mydestination =
-    $myhostname,
-    $mydomain,
-    localhost,
-    localhost.localdomain
+# NEVER list virtual domain names here
+mydestination = localhost
 
-# Debian convention
+
+
+# Debian convention is /etc/mailname
 # The default origin is used to construct the 'From' address for local users
-myorigin = /etc/mailname
+myorigin = $mydomain
 
 # Ask Dovecot to verify things. lmtp:hostname:port
 virtual_transport = lmtp:dovecot:24
 # Change to where you store your stuff
+local_transport = virtual
 alias_maps = hash:/etc/aliases proxy:pgsql:/etc/postfix/pgsql-aliases.cf
-local_recipient_maps = proxy:pgsql:/etc/postfix/pgsql-boxes.cf $alias_maps
+local_recipient_maps = $alias_maps
 
 alias_database = hash:/etc/aliases
 
@@ -61,6 +61,4 @@ mailbox_size_limit = 0
 recipient_delimiter = +
 inet_interfaces = all
 
-# tells Postfix to check a lookup table and reject email to users that
-# cannot be found in the table.
-local_recipient_maps = proxy:unix:passwd.byname $alias_maps
+# Append hostname and domain here

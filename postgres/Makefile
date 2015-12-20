@@ -1,12 +1,21 @@
 run:
 	sudo docker run --rm --name=postgres \
+					--net=mail_network \
 					-e POSTGRES_PASSWORD=R12e8H0Xam \
 					-e PGUSER=R12e8H0Xam \
 					-e POSTGRES_USER=postgres \
 					-e PGUSER=postgres \
 					postgres
 
-initdb: db tables mailuser
+shell:
+	sudo docker exec -it postgres /bin/bash
+
+
+initdb: db tables mailuser pwaccess
+
+pwaccess:
+	sudo docker exec -it postgres \
+	  sed -i -e "s#0.0.0.0/0 md5#0.0.0.0/0 password md5#" /var/lib/postgresql/data/pg_hba.conf
 
 db:
 	sudo docker exec -it postgres \
@@ -42,7 +51,7 @@ mailuser: db tables
 	sudo docker exec -it postgres \
 	  psql mail -c "GRANT SELECT ON TABLE users,alias TO mail"
 
-example: db tables
+example:
 	sudo docker exec -it postgres \
 	  psql mail -c "INSERT INTO domains (domain) \
 					  VALUES ('example.com');"
@@ -53,6 +62,10 @@ example: db tables
 	sudo docker exec -it postgres \
 	  psql mail -c "INSERT INTO users (name, domain, password) \
 					  VALUES ('bob', 'example.com', 'abc');"
+
+	sudo docker exec -it postgres \
+	  psql mail -c "INSERT INTO alias (name, domain, aka_name, aka_domain) \
+					  VALUES ('bob', 'example.com', 'bob', 'example.com');"
 
 	sudo docker exec -it postgres \
 	  psql mail -c "INSERT INTO alias (name, domain, aka_name, aka_domain) \
