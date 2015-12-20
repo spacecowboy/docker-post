@@ -22,6 +22,9 @@ COPY dovecot-sql.conf /etc/dovecot/dovecot-sql.conf
 RUN mkdir -p /etc/dovecot/sieve-filters
 COPY gpgit /etc/dovecot/sieve-filters/gpgit
 
+# CHOWN mail dirs
+RUN chown -R vmail:vmail /var/mail
+
 RUN doveconf -n
 
 # Should run Dovecot, then follow logs

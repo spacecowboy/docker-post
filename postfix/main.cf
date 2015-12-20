@@ -2,7 +2,7 @@
 #mydomain = example.com
 
 # sets the domains that postfix accepts emails for as final destination
-# NEVER list virtual domain names here
+# do not list virtual domains here (stuff which is present in database)
 mydestination = localhost
 
 
@@ -11,21 +11,32 @@ mydestination = localhost
 # The default origin is used to construct the 'From' address for local users
 myorigin = $mydomain
 
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+
+#Handing off local delivery to Dovecot's LMTP, and telling it where to store mail
+#virtual_transport = lmtp:unix:private/dovecot-lmtp
+#This passes it first to spamassassin
+#virtual_transport = dovecot-spamass
+#Getting spam to work, added dovecot as a service in master.cf instead
+#virtual_transport = dovecot
+#dovecot_destination_recipient_limit=1
+
 # Ask Dovecot to verify things. lmtp:hostname:port
 virtual_transport = lmtp:dovecot:24
-# Change to where you store your stuff
-local_transport = virtual
-alias_maps = hash:/etc/aliases proxy:pgsql:/etc/postfix/pgsql-aliases.cf
-local_recipient_maps = $alias_maps
 
-alias_database = hash:/etc/aliases
+#Virtual domains, users, and aliases
+virtual_mailbox_domains = proxy:pgsql:/etc/postfix/pgsql-domains.cf
+virtual_mailbox_maps = proxy:pgsql:/etc/postfix/pgsql-mailboxes.cf
+virtual_alias_maps = proxy:pgsql:/etc/postfix/pgsql-aliases.cf
+
 
 # relaying means accepting mail and then forwarding to a mail server
 # that is not the final destination for the mail and we have no need
 # for that
 relayhost =
 
-smtpd_banner = $myhostname ESMTP $mail_name (Debian/GNU)
+smtpd_banner = $myhostname ESMTP $mail_name
 biff = no
 
 # appending .domain is the MUA's job.

@@ -3,5 +3,4 @@ user = mail
 password = Cqg2amU7SY
 dbname = mail
 
-query = \
-  SELECT domain FROM domains WHERE domain = '%s'
+query = SELECT 1 FROM domains WHERE domains.domain = '%s'

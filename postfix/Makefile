@@ -9,3 +9,12 @@ run:
 
 shell:
 	sudo docker exec -it postfix /bin/bash
+
+test-domain:
+	sudo docker exec -it postfix postmap -q example.com pgsql:/etc/postfix/pgsql-domains.cf
+
+test-alias:
+	sudo docker exec -it postfix postmap -q bob@example.com pgsql:/etc/postfix/pgsql-aliases.cf
+
+test-mailbox:
+	sudo docker exec -it postfix postmap -q bob@example.com pgsql:/etc/postfix/pgsql-mailboxes.cf

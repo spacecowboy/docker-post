@@ -49,7 +49,7 @@ mailuser: db tables
 	  psql mail -c "CREATE USER mail WITH PASSWORD 'Cqg2amU7SY'"
 
 	sudo docker exec -it postgres \
-	  psql mail -c "GRANT SELECT ON TABLE users,alias TO mail"
+	  psql mail -c "GRANT SELECT ON TABLE domains,users,alias TO mail"
 
 example:
 	sudo docker exec -it postgres \

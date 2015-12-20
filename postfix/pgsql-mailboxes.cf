@@ -16,4 +16,4 @@ dbname = mail
 # Postfix 2.2 and later The SQL query template. See pgsql_table(5).
 # query = SELECT forw_addr FROM mxaliases WHERE alias='%s' AND status='paid'
 # %u = bob, %d = example.com, %s = bob@example.com
-query = SELECT concat(users.name, '@', users.domain) FROM users, alias WHERE users.name = alias.aka_name AND users.domain = alias.aka_domain AND alias.name = '%u' AND alias.domain = '%d'
+query = SELECT 1 FROM users WHERE users.name = '%u' AND users.domain = '%d'
