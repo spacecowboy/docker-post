@@ -63,9 +63,9 @@ example:
 	  psql mail -c "INSERT INTO users (name, domain, password) \
 					  VALUES ('bob', 'example.com', 'abc');"
 
-	sudo docker exec -it postgres \
-	  psql mail -c "INSERT INTO alias (name, domain, aka_name, aka_domain) \
-					  VALUES ('bob', 'example.com', 'bob', 'example.com');"
+#	sudo docker exec -it postgres \
+#	  psql mail -c "INSERT INTO alias (name, domain, aka_name, aka_domain) \
+#					  VALUES ('bob', 'example.com', 'bob', 'example.com');"
 
 	sudo docker exec -it postgres \
 	  psql mail -c "INSERT INTO alias (name, domain, aka_name, aka_domain) \

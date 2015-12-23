@@ -7,7 +7,7 @@ RUN apt-get -qy upgrade
 RUN apt-get -qy remove exim4
 RUN apt-get -qy install dovecot-lmtpd dovecot-pgsql \
                         dovecot-managesieved dovecot-sieve \
-                        dovecot-imapd
+                        dovecot-imapd dovecot-pop3d telnet
 RUN apt-get autoclean && rm -rf /var/lib/apt/lists/*
 
 # Dovecot needs to run as its own user, here called 'vmail'

@@ -23,7 +23,9 @@ alias_database = hash:/etc/aliases
 #dovecot_destination_recipient_limit=1
 
 # Ask Dovecot to verify things. lmtp:hostname:port
-virtual_transport = lmtp:dovecot:24
+virtual_transport = lmtp:inet:dovecot:24
+mailbox_transport = lmtp:inet:dovecot:24
+
 
 #Virtual domains, users, and aliases
 virtual_mailbox_domains = proxy:pgsql:/etc/postfix/pgsql-domains.cf
@@ -35,6 +37,7 @@ virtual_alias_maps = proxy:pgsql:/etc/postfix/pgsql-aliases.cf
 # that is not the final destination for the mail and we have no need
 # for that
 relayhost =
+#relay_domains = $mydestination
 
 smtpd_banner = $myhostname ESMTP $mail_name
 biff = no
@@ -47,29 +50,57 @@ append_dot_mydomain = no
 
 readme_directory = no
 
+# See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for
+# information on enabling SSL in the smtp client.
+
+smtpd_relay_restrictions =
+    permit_mynetworks
+    permit_sasl_authenticated
+    reject_unauth_destination
+    reject_unknown_recipient_domain
+    reject_unverified_recipient
+
+smtpd_recipient_restrictions =
+    permit_mynetworks
+    reject_unauth_destination
+    reject_unknown_recipient_domain
+    reject_unverified_recipient
+
+# Need this, as it tried to contact dovecot via ipv6
+inet_protocols = ipv4
+
+#mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+mynetworks_style = host
+mailbox_size_limit = 0
+recipient_delimiter = +
+inet_interfaces = all
+
+# Use /etc/hosts to find dovecot
+lmtp_host_lookup = native
+smtp_host_lookup = native
+
+smtpd_sasl_security_options = noanonymous
+smtpd_sasl_tls_security_options = $smtpd_sasl_security_options
+smtpd_sasl_local_domain = $mydomain
+broken_sasl_auth_clients = yes
 # TLS parameters
+# See https://weakdh.org/sysadmin.html
 smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
 smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
 smtpd_use_tls=yes
+smtpd_tls_auth_only = yes
+smtpd_tls_received_header = yes
+smtpd_tls_loglevel = 1
 smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
 smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 # we make TLS optional, because we're not allowed to make TLS required
 # on a public smtp server per RFC2487
 smtpd_tls_security_level=may
-# only TLSv1.0 and higher is allowed
-smtpd_tls_protocols = !SSLv2, !SSLv3
-
-# See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for
-# information on enabling SSL in the smtp client.
-
-smtpd_relay_restrictions =
-    permit_mynetworks,
-    permit_sasl_authenticated,
-    defer_unauth_destination
-
-mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
-mailbox_size_limit = 0
-recipient_delimiter = +
-inet_interfaces = all
-
-# Append hostname and domain here
+# Respond safely to POODLE and FREAK/Logjam
+smtpd_tls_mandatory_protocols=!SSLv2,!SSLv3
+smtp_tls_mandatory_protocols=!SSLv2,!SSLv3
+smtpd_tls_protocols=!SSLv2,!SSLv3
+smtp_tls_protocols=!SSLv2,!SSLv3
+smtpd_tls_exclude_ciphers = aNULL, eNULL, EXPORT, DES, RC4, MD5, PSK, aECDH, EDH-DSS-DES-CBC3-SHA, EDH-RSA-DES-CDC3-SHA, KRB5-DE5, CBC3-SHA
+smtpd_tls_dh1024_param_file = /etc/ssl/private/dhparams.pem
+# Need a newline at end of file
