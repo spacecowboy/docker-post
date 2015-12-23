@@ -23,8 +23,8 @@ alias_database = hash:/etc/aliases
 #dovecot_destination_recipient_limit=1
 
 # Ask Dovecot to verify things. lmtp:hostname:port
-virtual_transport = lmtp:inet:dovecot:24
-mailbox_transport = lmtp:inet:dovecot:24
+virtual_transport = lmtp:inet:172.19.0.3:24
+mailbox_transport = lmtp:inet:172.19.0.3:24
 
 
 #Virtual domains, users, and aliases
