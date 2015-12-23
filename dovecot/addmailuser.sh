@@ -11,14 +11,20 @@ if [ $# -eq 4 ]; then
   shift
 fi
 
+NAME=$1
+DOMAIN=$2
+PW=$3
+
 # Create a password hash from the given password
-PWSTRING=$(doveadm pw -s SHA512-CRYPT -p "$2")
+PWHASH=$(doveadm pw -s SHA512-CRYPT -p "$PW")
 
-echo "PWSTRING=$PWSTRING"
+echo "PWHASH=$PWHASH"
 
-VAL1="'""$1""'"
-VAL2="'""$2""'"
-VAL3="'""$PWSTRING""'"
+VAL1="'""$NAME""'"
+VAL2="'""$DOMAIN""'"
+VAL3="'""$PWHASH""'"
+
+echo "VALUES ($VAL1, $VAL2, $VAL3)"
 
 if [ "$MODE" = "-u" ]; then
   # Update the existing entry's password
