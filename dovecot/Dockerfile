@@ -23,7 +23,8 @@ RUN mkdir -p /etc/dovecot/sieve-filters
 COPY gpgit /etc/dovecot/sieve-filters/gpgit
 
 # CHOWN mail dirs
-RUN chown -R vmail:vmail /var/mail
+RUN mkdir -p /var/vmail
+RUN chown -R vmail:vmail /var/vmail
 
 RUN doveconf -n
 
