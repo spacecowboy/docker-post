@@ -26,7 +26,6 @@ COPY gpgit /etc/dovecot/sieve-filters/gpgit
 RUN mkdir -p /var/vmail
 RUN chown -R vmail:vmail /var/vmail
 
-RUN doveconf -n
+COPY run.sh /usr/local/bin/run.sh
 
-# Should run Dovecot, then follow logs
-CMD dovecot && tail -f /var/log/dovecot.log
+CMD /usr/local/bin/run.sh

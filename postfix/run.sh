@@ -2,10 +2,6 @@
 
 
 # Override these environment variable to your desired main domain
-echo "Setting: myhostname=$myhostname mydomain=$mydomain"
-#cat "myhostname=$myhostname" >> /etc/postfix/main.cf
-#cat "mydomain=$mydomain" >> /etc/postfix/main.cf
-
 postconf -e myhostname="$myhostname"
 postconf -e mydomain="$mydomain"
 
