@@ -2,9 +2,9 @@ run:
 	sudo docker run --rm --name=postgres \
 					--net=mail_network \
 					-e POSTGRES_PASSWORD=R12e8H0Xam \
-					-e PGUSER=R12e8H0Xam \
 					-e POSTGRES_USER=postgres \
 					-e PGUSER=postgres \
+					-e PGPASSWORD=R12e8H0Xam \
 					postgres
 
 shell:
@@ -42,14 +42,15 @@ tables: db
 					  aka_name TEXT NOT NULL, \
 					  aka_domain TEXT NOT NULL, \
 					  UNIQUE (name, domain), \
-					  FOREIGN KEY (aka_name, aka_domain) REFERENCES users (name, domain) ON DELETE CASCADE ON UPDATE CASCADE \
+					  FOREIGN KEY (aka_name, aka_domain) REFERENCES users (name, domain) ON DELETE CASCADE ON UPDATE CASCADE, \
+					  FOREIGN KEY (domain) REFERENCES domains (domain) ON DELETE CASCADE ON UPDATE CASCADE \
 					);"
 mailuser: db tables
 	sudo docker exec -it postgres \
 	  psql mail -c "CREATE USER mail WITH PASSWORD 'Cqg2amU7SY'"
 
 	sudo docker exec -it postgres \
-	  psql mail -c "GRANT SELECT ON TABLE domains,users,alias TO mail"
+	  psql mail -c "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE domains,users,alias TO mail"
 
 example:
 	sudo docker exec -it postgres \

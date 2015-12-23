@@ -7,7 +7,8 @@ RUN apt-get -qy upgrade
 RUN apt-get -qy remove exim4
 RUN apt-get -qy install dovecot-lmtpd dovecot-pgsql \
                         dovecot-managesieved dovecot-sieve \
-                        dovecot-imapd dovecot-pop3d telnet
+                        dovecot-imapd dovecot-pop3d telnet \
+                        postgresql-client
 RUN apt-get autoclean && rm -rf /var/lib/apt/lists/*
 
 # Dovecot needs to run as its own user, here called 'vmail'
@@ -21,6 +22,11 @@ COPY dovecot.conf /etc/dovecot/dovecot.conf
 COPY dovecot-sql.conf /etc/dovecot/dovecot-sql.conf
 RUN mkdir -p /etc/dovecot/sieve-filters
 COPY gpgit /etc/dovecot/sieve-filters/gpgit
+
+# Utility scripts
+COPY addmaildomain.sh /usr/local/bin/addmaildomain.sh
+COPY addmailuser.sh /usr/local/bin/addmailuser.sh
+COPY addmailalias.sh /usr/local/bin/addmailalias.sh
 
 # CHOWN mail dirs
 RUN mkdir -p /var/vmail
