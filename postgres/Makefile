@@ -1,3 +1,5 @@
+# Keep database data between runs
+# -v /path/to/db/dir:/var/lib/postgresql/data
 run:
 	sudo docker run --rm --name=postgres \
 					--net=mail_network \
@@ -5,17 +7,19 @@ run:
 					-e POSTGRES_USER=postgres \
 					-e PGUSER=postgres \
 					-e PGPASSWORD=R12e8H0Xam \
+					-v /home/jonas/workspaceDocker/docker-post/postgres/test:/var/lib/postgresql/data \
 					postgres
 
 shell:
 	sudo docker exec -it postgres /bin/bash
 
 
-initdb: db tables mailuser pwaccess
+initdb: db tables mailuser
 
-pwaccess:
-	sudo docker exec -it postgres \
-	  sed -i -e "s#0.0.0.0/0 md5#0.0.0.0/0 password md5#" /var/lib/postgresql/data/pg_hba.conf
+# Should not be necessary
+#pwaccess:
+#	sudo docker exec -it postgres \
+#	  sed -i -e "s#0.0.0.0/0 md5#0.0.0.0/0 password md5#" /var/lib/postgresql/data/pg_hba.conf
 
 db:
 	sudo docker exec -it postgres \
