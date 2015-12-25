@@ -45,6 +45,12 @@ smtpd_helo_restrictions =
     reject_invalid_helo_hostname,
     permit
 
+# This avoids accepting e-mails from erroneous envelope-senders that
+# can't be informed of problems, which finally would result in
+# deleting the message - even if Postfix claimed successful delivery
+# in the first.
+strict_rfc821_envelopes = yes
+
 # These settings make sure that the default smtp service
 # only allows delivery to domains and users which the
 # database knows about. E.g., only accept delivery of
