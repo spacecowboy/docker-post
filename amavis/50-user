@@ -10,10 +10,29 @@ use strict;
 
 # Postfix will connect on this port
 $inet_socket_port = 10024;
+# Accept connections from here
+@inet_acl = qw( 127.0.0.1 [::1] postfix-ip );
+# bind to all IP interfaces if undef
+$inet_socket_bind = undef;
 
 # Amavis will re-inject clean mails here
 $notify_method  = 'smtp:[postfix-ip]:10025';
 $forward_method = 'smtp:[postfix-ip]:10025';
+
+# true (e.g. 1) => syslog;  false (e.g. 0) => logging to file
+$DO_SYSLOG = 0;                 # (defaults to false)
+
+# Log file (if not using syslog)
+$LOGFILE = "/var/log/amavis.log";  # (defaults to empty, no log)
+
+#NOTE: levels are not strictly observed and are somewhat arbitrary
+# 0: startup/exit/failure messages, viruses detected
+# 1: args passed from client, some more interesting messages
+# 2: virus scanner output, timing
+# 3: server, client
+# 4: decompose parts
+# 5: more debug details
+$log_level = 2;  # (defaults to 0)
 
 #------------ Do not modify anything below this line -------------
 1;  # ensure a defined return

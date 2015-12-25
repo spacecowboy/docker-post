@@ -7,7 +7,7 @@ RUN apt-get -qy upgrade
 RUN apt-get -qy remove exim4
 
 # Necessary
-RUN apt-get -qy install sudo amavisd-new spamassassin clamav-daemon rsyslog
+RUN apt-get -qy install sudo amavisd-new spamassassin clamav-daemon
 
 # To be able to scan inside compressed files
 RUN apt-get -qy install p7zip arj bzip2 cabextract cpio file gzip \
@@ -19,16 +19,17 @@ RUN apt-get -qy install libnet-dns-perl libmail-spf-perl pyzor razor
 # Make some space
 RUN apt-get autoclean && rm -rf /var/lib/apt/lists/*
 
-# Log files must exist, or nothing gets written to them
-RUN touch /var/log/mail.log
-RUN touch /var/log/mail.err
-RUN touch /var/log/mail.info
-RUN touch /var/log/mail.warn
-
 # Add clamav user to the amavis group and vice versa in order for
 # Clamav to have access to scan files:
 RUN adduser clamav amavis
 RUN adduser amavis clamav
+
+# Pre-populate database so we can start services
+RUN sudo -u clamav freshclam
+
+# Make sure log file has correct permissions
+RUN touch /var/log/amavis.log
+RUN chown amavis:amavis /var/log/amavis.log
 
 # Copy the config file to enable spam and antivirus checking
 COPY 15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode
