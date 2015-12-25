@@ -45,16 +45,6 @@ smtpd_helo_restrictions =
     reject_invalid_helo_hostname,
     permit
 
-# See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for
-# information on enabling SSL in the smtp client.
-
-smtpd_relay_restrictions =
-    permit_mynetworks
-    permit_sasl_authenticated
-    reject_unauth_destination
-    reject_unknown_recipient_domain
-    reject_unverified_recipient
-
 # These settings make sure that the default smtp service
 # only allows delivery to domains and users which the
 # database knows about. E.g., only accept delivery of
