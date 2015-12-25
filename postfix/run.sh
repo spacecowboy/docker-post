@@ -1,5 +1,11 @@
 #!/bin/bash -eu
 
+# Postfix does not resolv hostnames with /etc/hosts
+DOVECOTIP=$(getent hosts dovecot | awk '{ print $1 }')
+# Fix lmtp host
+sed -i -e "s/lmtp:inet:.*:24/lmtp:inet:$DOVECOTIP:24/" /etc/postfix/main.cf
+# Fix auth host
+sed -i -e "s/inet:.*:12345/inet:$DOVECOTIP:12345/" /etc/postfix/master.cf
 
 # Override these environment variable to your desired main domain
 postconf -e myhostname="$myhostname"

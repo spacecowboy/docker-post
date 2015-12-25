@@ -10,8 +10,8 @@ alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
 
 # Ask Dovecot to verify users and store mail. lmtp:hostname:port
-virtual_transport = lmtp:inet:172.21.0.3:24
-mailbox_transport = lmtp:inet:172.21.0.3:24
+virtual_transport = lmtp:inet:dovecot-ip:24
+mailbox_transport = lmtp:inet:dovecot-ip:24
 
 
 #Virtual domains, users, and aliases
