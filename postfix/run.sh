@@ -17,8 +17,6 @@ grep '^[^#]' /etc/postfix/master.cf
 rm -f /etc/mailname
 echo "$myhostname" > /etc/mailname
 
-# Start postgrey
-service postgrey start
 # Restart postfix
 postfix start
 postfix reload

@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get -q update
 RUN apt-get -qy upgrade
 RUN apt-get -qy remove exim4
-RUN apt-get -qy install postfix postfix-pgsql postgrey openssl rsyslog telnet
+RUN apt-get -qy install postfix postfix-pgsql openssl rsyslog telnet
 RUN apt-get autoclean && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /etc/ssl/private/

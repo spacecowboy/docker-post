@@ -10,8 +10,8 @@ alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
 
 # Ask Dovecot to verify users and store mail. lmtp:hostname:port
-virtual_transport = lmtp:inet:172.19.0.3:24
-mailbox_transport = lmtp:inet:172.19.0.3:24
+virtual_transport = lmtp:inet:172.21.0.3:24
+mailbox_transport = lmtp:inet:172.21.0.3:24
 
 
 #Virtual domains, users, and aliases
@@ -55,13 +55,19 @@ smtpd_relay_restrictions =
     reject_unknown_recipient_domain
     reject_unverified_recipient
 
+# These settings make sure that the default smtp service
+# only allows delivery to domains and users which the
+# database knows about. E.g., only accept delivery of
+# mail whose destination is "here". A separate smtp service
+# is implemented for users to send mail elsewhere with.
+# See master.cf for "submission". Submission is smtp
+# running on port 587, e.g., only encrypted and authenticated.
 smtpd_recipient_restrictions =
    reject_non_fqdn_recipient
    reject_unknown_recipient_domain
    permit_mynetworks
    reject_unauth_destination
    reject_unverified_recipient
-   check_policy_service unix:postgrey/socket
    permit
 
 # Need this, as it tried to contact dovecot via ipv6
