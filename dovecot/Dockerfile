@@ -23,10 +23,8 @@ COPY dovecot-sql.conf /etc/dovecot/dovecot-sql.conf
 RUN mkdir -p /etc/dovecot/sieve-filters
 COPY gpgit /etc/dovecot/sieve-filters/gpgit
 
-# CHOWN mail dirs
+# make mail dirs
 RUN mkdir -p /var/vmail
-RUN chown -R vmail:vmail /var/vmail
-RUN chown -R vmail:vmail /etc/dovecot
 
 COPY run.sh /usr/local/bin/run.sh
 

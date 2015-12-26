@@ -7,6 +7,9 @@ if [ ! -f /etc/ssl/certs/dovecot.pem ]; then
           -keyout "/etc/ssl/private/dovecot.pem"
 fi
 
+chown -R vmail:vmail /var/vmail
+chown -R vmail:vmail /etc/dovecot
+
 # Set the postmaster address. This is required for lmtp to function.
 sed -i -e \
     "s/example.com/$mydomain/" \
