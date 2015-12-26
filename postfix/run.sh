@@ -9,14 +9,14 @@
 #
 # Generate key if needed.
 if [ ! -f "/etc/opendkim/keys/$mydomain/mail.private" ]; then
-  pushd /etc/opendkim/keys
+  pushd /etc/opendkim/keys/$mydomain
   opendkim-genkey --subdomains --domain=$mydomain --selector=mail
   popd
 fi
 # Print public key
 if [ -f "/etc/opendkim/keys/$mydomain/mail.txt" ]; then
   echo "OpenDKIM public key:"
-  cat /etc/opendkim/keys/mail.txt
+  cat /etc/opendkim/keys/$mydomain/mail.txt
 fi
 # Write to KeyTable if necessary
 if [ ! -f "/etc/opendkim/KeyTable" ]; then
