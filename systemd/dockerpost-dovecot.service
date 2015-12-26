@@ -26,6 +26,8 @@ ExecStart=/usr/bin/docker run --rm --name=dovecot \
       -p 143:143 \
       -p 993:993 \
       -v /root/mail:/var/vmail \
+      -v /etc/letsencrypt/live/example.com/privkey.pem:/etc/ssl/private/dovecot.pem \
+      -v /etc/letsencrypt/live/example.com/fullchain.pem:/etc/ssl/certs/dovecot.pem \
       -it docker-post/dovecot
 
 # Stop

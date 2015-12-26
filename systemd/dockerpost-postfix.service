@@ -27,7 +27,7 @@ ExecStart=/usr/bin/docker run --rm --name=postfix \
       -p 465:465 \
       -v /root/opendkim/keys:/etc/opendkim/keys \
       -v /etc/letsencrypt/live/example.com/privkey.pem:/etc/ssl/private/ssl-cert-snakeoil.key \
-      -v /etc/letsencrypt/live/example.com/fullchain.pem:/etc/ssl/certs/ssl-cert-snakeoil.pem
+      -v /etc/letsencrypt/live/example.com/fullchain.pem:/etc/ssl/certs/ssl-cert-snakeoil.pem \
       -it docker-post/postfix
 
 # Stop
