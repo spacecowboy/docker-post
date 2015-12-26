@@ -20,11 +20,6 @@ RUN touch /var/log/mail.info
 RUN touch /var/log/mail.warn
 
 # Needed for postfix to function
-RUN ln -snf /etc/services /var/spool/postfix/etc/services
-RUN ln -snf /etc/hosts /var/spool/postfix/etc/hosts
-RUN ln -snf /etc/localtime /var/spool/postfix/etc/localtime
-RUN ln -snf /etc/nsswitch.conf /var/spool/postfix/etc/nsswitch.conf
-RUN ln -snf /etc/resolv.conf /var/spool/postfix/etc/resolv.conf
 RUN ln -snf /etc/ssl /var/spool/postfix/etc/ssl
 
 # You should mount /etc/opendkim/keys as a volume to retain

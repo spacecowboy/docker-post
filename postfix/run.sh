@@ -57,6 +57,14 @@ postconf -e mydomain="$mydomain"
 # Print during dev
 postconf -n
 
+# Symlinks are not enough, they have to be copied
+cp -f /etc/services /var/spool/postfix/etc/services
+cp -f /etc/hosts /var/spool/postfix/etc/hosts
+cp -f /etc/localtime /var/spool/postfix/etc/localtime
+cp -f /etc/nsswitch.conf /var/spool/postfix/etc/nsswitch.conf
+cp -f /etc/resolv.conf /var/spool/postfix/etc/resolv.conf
+
+# Report obvious mistakes
 postfix check
 
 # Print during dev
