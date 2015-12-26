@@ -22,7 +22,8 @@ DOMAIN=$2
 PW=$3
 
 # Generate password hash with dovecot
-PWHASH=$(sudo docker exec -it dovecot doveadm pw -s SHA512-CRYPT -p "$PW")
+# Do NOT add -t here, Docker appends a carriage return then \r
+PWHASH=$(sudo docker exec -i dovecot doveadm pw -s SHA512-CRYPT -p $PW)
 
 SQL=""
 if [ "-u" = "$MODE" ]; then
