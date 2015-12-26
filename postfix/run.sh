@@ -24,6 +24,8 @@ if [ ! -f "/etc/opendkim/KeyTable" ]; then
 fi
 # chown entire directory
 chown -R opendkim:opendkim /etc/opendkim/
+# And make sure permissions are right
+chmod -R 0700 /etc/opendkim/keys/
 
 # Opendkim:
 cat /etc/opendkim.conf
