@@ -1,11 +1,11 @@
 build:
-	sudo docker build --tag=docker-post/postfix .
+	sudo docker build --tag=dockerpost/postfix .
 
 run:
 	sudo docker run --rm --name=postfix --hostname="mail.example.com" \
 	  --net=mail_network -p 1025:25 -p 587:587 \
 	  -e myhostname="mail.example.com" -e mydomain="example.com" \
-	  -it docker-post/postfix
+	  -it dockerpost/postfix
 
 shell:
 	sudo docker exec -it postfix /bin/bash

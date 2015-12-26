@@ -19,7 +19,7 @@ ExecStartPre=-/usr/bin/docker network create mail_network
 ExecStartPre=-/usr/bin/docker kill amavis
 ExecStart=/usr/bin/docker run --rm --name=amavis \
       --net=mail_network \
-      -it docker-post/amavis
+      -it dockerpost/amavis
 
 # Stop
 ExecStop=/usr/bin/docker stop amavis

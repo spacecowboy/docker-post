@@ -8,19 +8,19 @@
 # in SigningTable.
 #
 # Generate key if needed.
-if [ ! -f "/etc/opendkim/keys/mail.private" ]; then
+if [ ! -f "/etc/opendkim/keys/$mydomain/mail.private" ]; then
   pushd /etc/opendkim/keys
   opendkim-genkey --subdomains --domain=$mydomain --selector=mail
   popd
 fi
 # Print public key
-if [ -f "/etc/opendkim/keys/mail.txt" ]; then
+if [ -f "/etc/opendkim/keys/$mydomain/mail.txt" ]; then
   echo "OpenDKIM public key:"
   cat /etc/opendkim/keys/mail.txt
 fi
 # Write to KeyTable if necessary
 if [ ! -f "/etc/opendkim/KeyTable" ]; then
-  echo "omnikey $mydomain:mail:/etc/opendkim/keys/mail.private" > /etc/opendkim/KeyTable
+  echo "omnikey $mydomain:mail:/etc/opendkim/keys/$mydomain/mail.private" > /etc/opendkim/KeyTable
 fi
 # chown entire directory
 chown -R opendkim:opendkim /etc/opendkim/
