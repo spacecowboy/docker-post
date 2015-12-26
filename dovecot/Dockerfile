@@ -23,11 +23,6 @@ COPY dovecot-sql.conf /etc/dovecot/dovecot-sql.conf
 RUN mkdir -p /etc/dovecot/sieve-filters
 COPY gpgit /etc/dovecot/sieve-filters/gpgit
 
-# Utility scripts
-COPY addmaildomain.sh /usr/local/bin/addmaildomain.sh
-COPY addmailuser.sh /usr/local/bin/addmailuser.sh
-COPY addmailalias.sh /usr/local/bin/addmailalias.sh
-
 # CHOWN mail dirs
 RUN mkdir -p /var/vmail
 RUN chown -R vmail:vmail /var/vmail
