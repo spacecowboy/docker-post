@@ -17,6 +17,7 @@ KillMode=none
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker network create mail_network
 ExecStartPre=-/usr/bin/docker kill dovecot
+ExecStartPre=-/usr/bin/docker pull dockerpost/dovecot
 ExecStart=/usr/bin/docker run --rm --name=dovecot \
       --net=mail_network \
       --hostname=mail.example.com \
