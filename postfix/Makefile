@@ -7,6 +7,9 @@ run:
 	  -e myhostname="mail.example.com" -e mydomain="example.com" \
 	  -it dockerpost/postfix
 
+push:
+	sudo docker push dockerpost/postfix
+
 shell:
 	sudo docker exec -it postfix /bin/bash
 

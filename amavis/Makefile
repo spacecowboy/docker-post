@@ -6,5 +6,8 @@ run:
 	  --net=mail_network \
 	  -it dockerpost/amavis
 
+push:
+	sudo docker push dockerpost/amavis
+
 shell:
 	sudo docker exec -it amavis /bin/bash
