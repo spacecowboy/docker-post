@@ -27,15 +27,11 @@ RUN ln -snf /etc/nsswitch.conf /var/spool/postfix/etc/nsswitch.conf
 RUN ln -snf /etc/resolv.conf /var/spool/postfix/etc/resolv.conf
 RUN ln -snf /etc/ssl /var/spool/postfix/etc/ssl
 
-# Override these from the commandline when running the container
-#ENV myhostname="mail.example.com"
-#ENV mydomain="example.com"
-
-# Mount some files of your own to enable dkim signing
+# You should mount /etc/opendkim/keys as a volume to retain
+# your dkim key across restarts.
 RUN mkdir -p /etc/opendkim
 RUN mkdir -p /etc/opendkim/keys
-RUN touch /etc/opendkim/KeyTable
-RUN touch /etc/opendkim/SigningTable
+COPY SigningTable /etc/opendkim/SigningTable
 COPY TrustedHosts /etc/opendkim/TrustedHosts
 # Copy opendkim config files
 COPY opendkim.conf /etc/opendkim.conf

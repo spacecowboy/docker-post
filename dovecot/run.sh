@@ -16,6 +16,8 @@ sed -i -e \
 doveconf -n
 
 # Start dovecot
+# It might complain about set-priority (nice level)
+# on newer versions of Docker. This is fine.
 dovecot
 
 # And follow logs

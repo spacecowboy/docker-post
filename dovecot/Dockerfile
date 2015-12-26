@@ -31,6 +31,7 @@ COPY addmailalias.sh /usr/local/bin/addmailalias.sh
 # CHOWN mail dirs
 RUN mkdir -p /var/vmail
 RUN chown -R vmail:vmail /var/vmail
+RUN chown -R vmail:vmail /etc/dovecot
 
 COPY run.sh /usr/local/bin/run.sh
 

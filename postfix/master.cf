@@ -10,8 +10,10 @@
 #               (yes)   (yes)   (yes)   (never) (100)
 # ==========================================================================
 # Standard smtp (port 25) for accepting mail
-# Sends mail to amavis for spam filtering and virus scanning
-# before going to 10025 smtp service for delivery into dovecot
+# Sends mail to amavis for spam filtering and virus scanning.
+# Amavis additionally verifies dkim signatures, so no need
+# to invoke the opendkim milter here. Once accepted, mail
+# goes to 10025 smtp service for delivery into dovecot.
 smtp      inet  n       -       -       -       -       smtpd
   -o content_filter=amavisfeed:[amavis-ip]:10024
 # Submission is smtp over tls (port 587) for sending mail
