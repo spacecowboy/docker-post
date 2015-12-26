@@ -29,6 +29,7 @@ submission inet n       -       -       -       -       smtpd
   -o smtpd_recipient_restrictions=reject_non_fqdn_recipient,permit_sasl_authenticated,reject
   -o smtpd_sasl_type=dovecot
   -o smtpd_sasl_path=inet:[dovecot-ip]:12345
+  -o smtpd_milters=inet:127.0.0.1:12301
 # Confusingly, the ip and port for amavis is defined when it
 # is used, see 'smtp' service above.
 amavisfeed unix    -       -       n       -       2     lmtp
