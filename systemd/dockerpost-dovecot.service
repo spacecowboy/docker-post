@@ -1,0 +1,35 @@
+[Unit]
+Description=Dovecot IMAP server
+# Requirements
+Requires=docker.service dockerpost-postgres.service
+# Dependency ordering
+After=docker.service dockerpost-postgres.service
+
+[Service]
+# Let processes take awhile to start up (for first run Docker containers)
+TimeoutStartSec=0
+
+# Change killmode from "control-group" to "none" to let Docker remove
+# work correctly.
+KillMode=none
+
+# Pre-start and Start
+## Directives with "=-" are allowed to fail without consequence
+ExecStartPre=-/usr/bin/docker network create mail_network
+ExecStartPre=-/usr/bin/docker kill dovecot
+ExecStart=/usr/bin/docker run --rm --name=dovecot \
+      --net=mail_network \
+      --hostname=mail.example.com \
+      -e mydomain=example.com \
+      -p 110:110 \
+      -p 995:995 \
+      -p 143:143 \
+      -p 993:993 \
+      -v /root/mail:/var/vmail \
+      -it docker-post/dovecot
+
+# Stop
+ExecStop=/usr/bin/docker stop dovecot
+
+[Install]
+WantedBy=multi-user.target

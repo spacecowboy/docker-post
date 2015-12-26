@@ -1,0 +1,33 @@
+[Unit]
+Description=Postgres database (for mail)
+# Requirements
+Requires=docker.service
+# Dependency ordering
+After=docker.service
+
+[Service]
+# Let processes take awhile to start up (for first run Docker containers)
+TimeoutStartSec=0
+
+# Change killmode from "control-group" to "none" to let Docker remove
+# work correctly.
+KillMode=none
+
+# Pre-start and Start
+## Directives with "=-" are allowed to fail without consequence
+ExecStartPre=-/usr/bin/docker network create mail_network
+ExecStartPre=-/usr/bin/docker kill postgres
+ExecStart=/usr/bin/docker run --rm --name=postgres \
+      --net=mail_network \
+      -e POSTGRES_PASSWORD=R12e8H0Xam \
+      -e POSTGRES_USER=postgres \
+      -e PGUSER=postgres \
+      -e PGPASSWORD=R12e8H0Xam \
+      -v /root/maildb:/var/lib/postgresql/data \
+      postgres
+
+# Stop
+ExecStop=/usr/bin/docker stop postgres
+
+[Install]
+WantedBy=multi-user.target

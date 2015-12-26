@@ -1,0 +1,28 @@
+[Unit]
+Description=Amavis antivirus and spam filter
+# Requirements
+Requires=docker.service dockerpost-postfix.service
+# Dependency ordering, don't add postfix here for cyclic reasons
+After=docker.service
+
+[Service]
+# Let processes take awhile to start up (for first run Docker containers)
+TimeoutStartSec=0
+
+# Change killmode from "control-group" to "none" to let Docker remove
+# work correctly.
+KillMode=none
+
+# Pre-start and Start
+## Directives with "=-" are allowed to fail without consequence
+ExecStartPre=-/usr/bin/docker network create mail_network
+ExecStartPre=-/usr/bin/docker kill amavis
+ExecStart=/usr/bin/docker run --rm --name=amavis \
+      --net=mail_network \
+      -it docker-post/amavis
+
+# Stop
+ExecStop=/usr/bin/docker stop amavis
+
+[Install]
+WantedBy=multi-user.target
