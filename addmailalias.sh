@@ -20,3 +20,4 @@ echo "$SQL"
 # Insert into database
 sudo docker exec -it postgres \
      psql mail -c "$SQL"
+
