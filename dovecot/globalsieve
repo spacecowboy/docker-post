@@ -1,0 +1,18 @@
+########
+# This file is executed before a user's own sieve script.
+# Manage your own sieve script with ManageSieve
+########
+
+# This can be used to auto-encrypt mails depending on recipient.
+# subaddress - for dealing with stuff like user+amazon@domain.com
+# :user is the left part and :detail is the right part
+# :user handles no detail part being present also.
+
+# The following script files spam into the Junk folder
+require ["fileinto", "subaddress", "vnd.dovecot.filter"];
+
+# First check for spam
+if header :contains "X-Spam-Flag" ["YES"] {
+  fileinto "Junk";
+  stop;
+}
