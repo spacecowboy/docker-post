@@ -10,11 +10,18 @@
 #               (yes)   (yes)   (yes)   (never) (100)
 # ==========================================================================
 # Standard smtp (port 25) for accepting mail
+# Uses postscreen to deny spammers which don't follow the rules
+smtp      inet  n       -       n       -       1       postscreen
+# STARTTLS support for postscreen
+tlsproxy  unix  -       -       n       -       0       tlsproxy
+# This service does DNSBL lookups for postscreen(8) and logs results.
+dnsblog   unix  -       -       n       -       0       dnsblog
+# Stuff that passes postscreen goes here.
 # Sends mail to amavis for spam filtering and virus scanning.
 # Amavis additionally verifies dkim signatures, so no need
 # to invoke the opendkim milter here. Once accepted, mail
 # goes to 10025 smtp service for delivery into dovecot.
-smtp      inet  n       -       -       -       -       smtpd
+smtpd     pass  -       -       n       -       -       smtpd
   -o content_filter=amavisfeed:[amavis-ip]:10024
 # Submission is smtp over tls (port 587) for sending mail
 # Options specified override default configuration in main.cf

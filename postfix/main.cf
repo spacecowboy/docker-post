@@ -45,6 +45,45 @@ smtpd_helo_restrictions =
     reject_invalid_helo_hostname,
     permit
 
+# Catch spam as early as possible, and reject it
+#
+# ignore (default)
+#    Ignore the failure of this test. Allow other tests to
+#    complete. Repeat this test the next time the client
+#    connects. This option is useful for testing and collecting
+#    statistics without blocking mail.
+# enforce
+#    Allow other tests to complete. Reject attempts to deliver mail
+#    with a 550 SMTP reply, and log the helo/sender/recipient
+#    information. Repeat this test the next time the client connects.
+# drop
+#    Drop the connection immediately with a 521 SMTP reply. Repeat
+#    this test the next time the client connects.
+postscreen_blacklist_action = drop
+postscreen_greet_action = enforce
+postscreen_dnsbl_action = enforce
+
+postscreen_dnsbl_threshold = 2
+postscreen_dnsbl_sites = zen.spamhaus.org*2
+  bl.spamcop.net*1 b.barracudacentral.org*1
+
+# detects zombies that send multiple commands, instead of sending one
+# command and waiting for the server to reply.
+postscreen_pipelining_enable = yes
+postscreen_pipelining_action = enforce
+# detects zombies that send commands specified with the
+# postscreen_forbidden_commands parameter. This also detects commands
+# with the syntax of a message header label. The latter is a symptom
+# that the client is sending message content after ignoring all the
+# responses from postscreen(8) that reject mail.
+postscreen_non_smtp_command_enable = yes
+postscreen_non_smtp_command_action = drop
+# SMTP is a line-oriented protocol: lines have a limited length, and
+# are terminated with <CR><LF>. Lines ending in a "bare" <LF>, that is
+# newline not preceded by carriage return, are not allowed in SMTP.
+postscreen_bare_newline_enable = yes
+postscreen_bare_newline_action = enforce
+
 # This avoids accepting e-mails from erroneous envelope-senders that
 # can't be informed of problems, which finally would result in
 # deleting the message - even if Postfix claimed successful delivery
