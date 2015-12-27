@@ -8,6 +8,7 @@
 # in SigningTable.
 #
 # Generate key if needed.
+mkdir -p /etc/opendkim/keys/$mydomain
 if [ ! -f "/etc/opendkim/keys/$mydomain/mail.private" ]; then
   pushd /etc/opendkim/keys/$mydomain
   opendkim-genkey --subdomains --domain=$mydomain --selector=mail
