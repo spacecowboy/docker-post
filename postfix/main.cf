@@ -40,10 +40,12 @@ readme_directory = no
 smtpd_delay_reject = yes
 smtpd_helo_required = yes
 smtpd_helo_restrictions =
-    permit_mynetworks,
-    reject_non_fqdn_helo_hostname,
-    reject_invalid_helo_hostname,
+    permit_mynetworks
+    reject_non_fqdn_helo_hostname
+    reject_invalid_helo_hostname
     permit
+# Don't accept mail from domains that don't exist.
+smtpd_sender_restrictions = reject_unknown_sender_domain
 
 # Catch spam as early as possible, and reject it
 #
@@ -104,6 +106,13 @@ smtpd_recipient_restrictions =
    reject_unauth_destination
    reject_unverified_recipient
    permit
+
+# Relay control (Postfix 2.10 and later): local clients and
+# authenticated clients may specify any destination domain.
+smtpd_relay_restrictions =
+   permit_mynetworks
+   permit_sasl_authenticated
+   reject_unauth_destination
 
 # For OpenDKIM. See master.cf for smtpd_milters
 milter_default_action = accept
