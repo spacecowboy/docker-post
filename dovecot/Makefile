@@ -13,5 +13,10 @@ run:
 push:
 	sudo docker push dockerpost/dovecot
 
+runshell:
+	sudo docker run --rm --name=dovecot --hostname=mail.example.com \
+	  -p 143:143 -p 110:110 \
+	  -e mydomain=example.com --net=mail_network -it dockerpost/dovecot /bin/bash
+
 shell:
 	sudo docker exec -it dovecot /bin/bash
