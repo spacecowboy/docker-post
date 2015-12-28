@@ -23,7 +23,7 @@ COPY dovecot-sql.conf /etc/dovecot/dovecot-sql.conf
 RUN mkdir -p /etc/dovecot/sieve-filters
 COPY gpgit /etc/dovecot/sieve-filters/gpgit
 RUN mkdir -p /etc/dovecot/scripts
-COPY globalsieve /etc/dovecot/scripts/.sieve
+COPY globalsieve /etc/dovecot/scripts/default.sieve
 
 # make mail dirs
 RUN mkdir -p /var/vmail
