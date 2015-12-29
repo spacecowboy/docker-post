@@ -13,13 +13,7 @@ run:
 shell:
 	sudo docker exec -it postgres /bin/bash
 
-
 initdb: db tables mailuser
-
-# Should not be necessary
-#pwaccess:
-#	sudo docker exec -it postgres \
-#	  sed -i -e "s#0.0.0.0/0 md5#0.0.0.0/0 password md5#" /var/lib/postgresql/data/pg_hba.conf
 
 db:
 	sudo docker exec -it postgres \
@@ -68,15 +62,6 @@ example:
 	  psql mail -c "INSERT INTO users (name, domain, password) \
 					  VALUES ('bob', 'example.com', 'abc');"
 
-#	sudo docker exec -it postgres \
-#	  psql mail -c "INSERT INTO alias (name, domain, aka_name, aka_domain) \
-#					  VALUES ('bob', 'example.com', 'bob', 'example.com');"
-
 	sudo docker exec -it postgres \
 	  psql mail -c "INSERT INTO alias (name, domain, aka_name, aka_domain) \
 					  VALUES ('bob.smith', 'example.org', 'bob', 'example.com');"
-
-errors: db tables
-	sudo docker exec -it postgres \
-	  psql mail -c "INSERT INTO alias (name, domain, aka_user) \
-					  VALUES ('somename', 'unknown.com', '1');"
