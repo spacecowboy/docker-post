@@ -22,6 +22,10 @@ $forward_method = 'smtp:[postfix-ip]:10025';
 # Verify dkim signatures if present
 $enable_dkim_verification = 1;
 
+# No necessary unless you have a high volume of mail
+$smtp_connection_cache_on_demand = 0;
+$smtp_connection_cache_enable = 0;
+
 # true (e.g. 1) => syslog;  false (e.g. 0) => logging to file
 $DO_SYSLOG = 0;                 # (defaults to false)
 
