@@ -65,9 +65,16 @@ postscreen_blacklist_action = drop
 postscreen_greet_action = enforce
 postscreen_dnsbl_action = enforce
 
-postscreen_dnsbl_threshold = 2
-postscreen_dnsbl_sites = zen.spamhaus.org*2
+# Blacklists have positive weights, whitelists have negative weights
+postscreen_dnsbl_sites = zen.spamhaus.org*1
   bl.spamcop.net*1 b.barracudacentral.org*1
+  list.dnswl.org*-1 swl.spamhaus.org*-1
+# If combined score is above this threshold, refuse delivery directly
+postscreen_dnsbl_threshold = 1
+# If combined score is below this threshold, allow delivery and skip
+# further tests
+postscreen_dnsbl_whitelist_threshold = -1
+postscreen_dnsbl_ttl = 1h
 
 # detects zombies that send multiple commands, instead of sending one
 # command and waiting for the server to reply.
