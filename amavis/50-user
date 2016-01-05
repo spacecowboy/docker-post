@@ -16,8 +16,8 @@ $inet_socket_port = 10024;
 $inet_socket_bind = undef;
 
 # Amavis will re-inject clean mails here
-$notify_method  = 'smtp:[postfix-ip]:10025';
-$forward_method = 'smtp:[postfix-ip]:10025';
+$notify_method  = 'smtp:[postfix]:10025';
+$forward_method = 'smtp:[postfix]:10025';
 
 # Verify dkim signatures if present
 $enable_dkim_verification = 1;

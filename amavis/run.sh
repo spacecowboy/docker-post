@@ -5,10 +5,6 @@ sudo -u amavis razor-admin -create
 sudo -u amavis razor-admin -register
 sudo -u amavis pyzor discover
 
-# Fix postfix ip
-POSTFIXIP=$(getent hosts postfix | awk '{ print $1 }')
-sed -i -e "s/postfix-ip/$POSTFIXIP/" /etc/amavis/conf.d/50-user
-
 # Start service to update db daily
 service clamav-freshclam start
 
