@@ -41,8 +41,32 @@ $LOGFILE = "/var/log/amavis.log";  # (defaults to empty, no log)
 # 5: more debug details
 $log_level = 2;  # (defaults to 0)
 
-# Want SpamAssassin to add headers to all mails, even clean ones
-$sa_tag_level_deflt = -999;
+$sa_tag_level_deflt  = -999;  # add spam info headers if at, or above that level
+#$sa_tag2_level_deflt = 6.31; # add 'spam detected' headers at that level
+#$sa_kill_level_deflt = 6.31; # triggers spam evasive actions
+
+# $mydomain is used just for convenience in the config files and it is not
+# used internally by amavisd-new except in the default X_HEADER_LINE (which
+# Debian overrides by default anyway).
+
+# This uses /etc/mailman by default which we don't want
+chomp($mydomain = `head -n 1 /etc/hostname`);
+
+# amavisd-new needs to know which email domains are to be considered local
+# to the administrative domain.  Only emails to "local" domains are subject
+# to certain functionality, such as the addition of spam tags.
+#
+# Default local domains to $mydomain and all subdomains.  Remember to
+# override or redefine this if $mydomain is changed later in the config
+# sequence.
+#
+#@local_domains_acl = ( ".$mydomain" );
+
+# Only used for incoming mail, so consider all destinations local
+#@local_domains_maps = ['.'];
+@local_domains_acl = ['.'];
+
+
 
 #------------ Do not modify anything below this line -------------
 1;  # ensure a defined return
