@@ -41,5 +41,8 @@ $LOGFILE = "/var/log/amavis.log";  # (defaults to empty, no log)
 # 5: more debug details
 $log_level = 2;  # (defaults to 0)
 
+# Want SpamAssassin to add headers to all mails, even clean ones
+$sa_tag_level_deflt = -999;
+
 #------------ Do not modify anything below this line -------------
 1;  # ensure a defined return
