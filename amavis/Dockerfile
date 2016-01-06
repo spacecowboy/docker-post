@@ -31,9 +31,15 @@ RUN sudo -u clamav freshclam
 RUN touch /var/log/amavis.log
 RUN chown amavis:amavis /var/log/amavis.log
 
+# Prepare spam filter database location
+RUN mkdir -p /var/spamassassin/bayes_db
+
 # Copy the config file to enable spam and antivirus checking
 COPY 15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode
 COPY 50-user /etc/amavis/conf.d/50-user
+COPY sa-local.cf /etc/spamassassin/local.cf
 
+COPY learn.sh /usr/local/bin/learn.sh
 COPY run.sh /usr/local/bin/run.sh
+
 CMD /usr/local/bin/run.sh
