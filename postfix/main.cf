@@ -132,8 +132,9 @@ mynetworks_style = host
 mailbox_size_limit = 0
 # You can use either of the configured delimiters (but only
 # one!). This is good because some sites do not allow you to use + in
-# emails.
-recipient_delimiter = +-
+# emails. Note that while postfix allows several to be defined,
+# dovecot only allows one.
+recipient_delimiter = +-.
 inet_interfaces = all
 
 smtpd_sasl_security_options = noanonymous
