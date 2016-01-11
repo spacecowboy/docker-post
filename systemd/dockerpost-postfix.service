@@ -2,8 +2,7 @@
 Description=Postfix SMTP server
 # Requirements
 Requires=docker.service dockerpost-dovecot.service dockerpost-amavis.service
-# Dependency ordering, don't add amavis for cyclic reasons
-After=docker.service dockerpost-dovecot.service
+After=docker.service dockerpost-dovecot.service dockerpost-amavis.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
@@ -17,6 +16,7 @@ KillMode=none
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker network create mail_network
 ExecStartPre=-/usr/bin/docker kill postfix
+ExecStartPre=-/usr/bin/docker rm postfix
 ExecStartPre=-/usr/bin/docker pull dockerpost/postfix
 ExecStart=/usr/bin/docker run --rm --name=postfix \
       --hostname=mail.example.com \
