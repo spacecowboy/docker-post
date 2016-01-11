@@ -17,6 +17,7 @@ KillMode=none
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker network create mail_network
 ExecStartPre=-/usr/bin/docker kill postgres
+ExecStartPre=-/usr/bin/docker rm postgres
 ExecStart=/usr/bin/docker run --rm --name=postgres \
       --net=mail_network \
       -e POSTGRES_PASSWORD=R12e8H0Xam \
