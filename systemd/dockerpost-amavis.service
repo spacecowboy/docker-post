@@ -1,8 +1,7 @@
 [Unit]
 Description=Amavis antivirus and spam filter
 # Requirements
-Requires=docker.service dockerpost-postfix.service
-# Dependency ordering, don't add postfix here for cyclic reasons
+Requires=docker.service
 After=docker.service
 
 [Service]
@@ -17,10 +16,13 @@ KillMode=none
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker network create mail_network
 ExecStartPre=-/usr/bin/docker kill amavis
+ExecStartPre=-/usr/bin/docker rm amavis
 ExecStartPre=-/usr/bin/docker pull dockerpost/amavis
 ExecStart=/usr/bin/docker run --rm --name=amavis \
       --net=mail_network \
       --hostname=mail.example.com \
+      -v /root/mail:/var/vmail \
+      -v /root/sa_db:/var/spamassassin/bayes_db \
       -t dockerpost/amavis
 
 # Stop
