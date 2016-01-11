@@ -148,7 +148,7 @@ start the rest of the containers.
 ### Start dovecot
 
 Edit
-[systemd/dockerpost-postgres.service](https://github.com/spacecowboy/docker-post/tree/master/systemd/dockerpost-dovecot.service)
+[systemd/dockerpost-dovecot.service](https://github.com/spacecowboy/docker-post/tree/master/systemd/dockerpost-dovecot.service)
 and set the primary `--hostname` for your server, as well as its
 domain as `-e mydomain`.
 
@@ -170,7 +170,7 @@ systemctl start dockerpost-dovecot.service
 ### Start amavis
 
 Amavis provides spam filtering and antivirus checking. Edit
-[systemd/dockerpost-postgres.service](https://github.com/spacecowboy/docker-post/tree/master/systemd/dockerpost-amavis.service)
+[systemd/dockerpost-amavis.service](https://github.com/spacecowboy/docker-post/tree/master/systemd/dockerpost-amavis.service)
 and set the primary `--hostname` for your server.
 
 Amavis needs access to the mail directory (replace `/root/mail`) so
@@ -202,7 +202,7 @@ Postfix is the SMTP server, delivering outgoing mail and accepting
 incoming mail (after verification).
 
 Edit
-[systemd/dockerpost-postgres.service](https://github.com/spacecowboy/docker-post/tree/master/systemd/dockerpost-amavis.service)
+[systemd/dockerpost-postfix.service](https://github.com/spacecowboy/docker-post/tree/master/systemd/dockerpost-postfix.service)
 and set your primary hostname in `--hostname` and `-e myhostname` as well as just the domain in `-e mydomain`.
 
 Then specify a location to store your dkim keys instead of `/root/opendkim-keys`. Note that the container will print what you should put in your DNS records on startup. You can view it with:
