@@ -7,7 +7,7 @@ run:
 					-e POSTGRES_USER=postgres \
 					-e PGUSER=postgres \
 					-e PGPASSWORD=R12e8H0Xam \
-					-v /home/jonas/workspaceDocker/docker-post/postgres/test:/var/lib/postgresql/data \
+					-v /root/maildb:/var/lib/postgresql/data \
 					postgres
 
 shell:
@@ -49,19 +49,3 @@ mailuser: db tables
 
 	sudo docker exec -it postgres \
 	  psql mail -c "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE domains,users,alias TO mail"
-
-example:
-	sudo docker exec -it postgres \
-	  psql mail -c "INSERT INTO domains (domain) \
-					  VALUES ('example.com');"
-	sudo docker exec -it postgres \
-	  psql mail -c "INSERT INTO domains (domain) \
-					  VALUES ('example.org');"
-
-	sudo docker exec -it postgres \
-	  psql mail -c "INSERT INTO users (name, domain, password) \
-					  VALUES ('bob', 'example.com', 'abc');"
-
-	sudo docker exec -it postgres \
-	  psql mail -c "INSERT INTO alias (name, domain, aka_name, aka_domain) \
-					  VALUES ('bob.smith', 'example.org', 'bob', 'example.com');"

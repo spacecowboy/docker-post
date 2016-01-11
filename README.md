@@ -1,75 +1,46 @@
 # docker-post
 
 A collection of docker containers for setting up a complete
-self-hosted e-mail system. Features include:
+self-hosted e-mail system. Default configuration provides:
 
 * SMTP server (Postfix)
 * IMAP/POP server (Dovecot)
+* Virtual domains/users/aliases (Postgres)
 * DKIM signing of outgoing mail (OpenDkim)
 * DKIM signature verification of incoming mail (Amavis)
-* Spam filtering (Postscreen, Amavis with Pyzor/Razor)
-* Antivirus (Amavis with Clam)
-* Passwords stored hashed and salted (Postgres)
+* Spam filtering (Postscreen, Amavis with Pyzor/Razor/SpamAssassin)
+* Antivirus (Amavis with ClamAV)
 * Server side filter/script support with Sieve and ManageSieve
 * Entirely [LetsEncrypt](letsencrypt.org) compatible
+* Passwords stored hashed and salted (Postgres)
 
-## How to get started
+## Before your first run: configure the database
 
 The best way is to run the system once the database is configured is
 with the
 [provided SystemD units](https://github.com/spacecowboy/docker-post/tree/master/systemd)
 in order to get the correct startup and so on even across
 reboots. During development, it is useful to run the containers
-directly however.
-
-### Setup a docker network
-
-The containers need to communicate with each other, and to do so in an
-isolated manner a docker network is used. Just create it with:
-
-    docker network create mail_network
-
-It is untested but in theory it should work fine to spread the
-containers across several physical machines using docker machine for
-example.
+directly however. See the individual containers for more information
+on that.
 
 ### Start the database
 
-Start a container with Postgres:
+First edit
+[systemd/dockerpost-postgres.service](https://github.com/spacecowboy/docker-post/tree/master/systemd/dockerpost-postgres.service)
+and set a location for the volume (`-v` line) of your choice.
+
+Then enable and start the postgres service:
 
 ```
-docker run --rm --name=postgres \
-  --net=mail_network \
-  -e POSTGRES_PASSWORD=R12e8H0Xam \
-  -e POSTGRES_USER=postgres \
-  -e PGUSER=postgres \
-  -e PGPASSWORD=R12e8H0Xam \
-  -v /root/maildb:/var/lib/postgresql/data \
-  postgres
+cp systemd/dockerpost-postgres.service /etc/systemd/system/
+systemctl enable dockerpost-postgres.service
+systemctl start dockerpost-postgres.service
 ```
 
-This just starts a copy of the official Postgres container.
-
-The environment variables (`-e`) are used to create a default user, if
-a database does not yet exist, and to then provide default credentials
-for sql commands done inside that container. You can change the
-password (and username) if you like. A specific mail user for the
-containers is created later.
-
-The volume (`-v`) specifies where to save (and create if necessary)
-the database and can be omitted if you actually want your database to
-go away when you stop the container (useful during
-development). Change `/root/maildb` to a location of your choice.
-
-You can also change the values in the
-[postgres Makefile](https://github.com/spacecowboy/docker-post/blob/master/postgres/)
-and in that folder, run:
-
-    make run
+This will create the required docker-network, pull the latest version of the postgres docker container, and start This just starts a copy of the official Postgres container.
 
 ### Configure the database
-
-All of the following steps and be done by running `make initdb`.
 
 First create a new database called `mail`:
 
@@ -131,121 +102,128 @@ docker exec -it postgres \
   psql mail -c "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE domains,users,alias TO mail"
 ```
 
+### Add some data to your database
+
+Use the included scripts to easily add your users and aliases into the
+database. Note that since foreign keys are used in the DB, order
+matters.
+
+#### Domains
+
+[addmaildomain.sh](https://github.com/spacecowboy/docker-post/blob/master/addmaildomain.sh)
+
+```
+./addmaildomain.sh example1.com
+./addmaildomain.sh example2.org
+```
+
+#### Users
+
+[addmailuser.sh](https://github.com/spacecowboy/docker-post/blob/master/addmailuser.sh)
+
+```
+./addmailuser.sh bob example1.com secretpassword
+./addmailuser.sh alice example2.org moresecretpw
+```
+
+Passwords are stored hashed and salted with `SHA512-CRYPT`.
+
+#### Aliases
+
+Aliases are strictly optional. Note that it is possible to login with
+either the user-address or any alias-address.
+
+[addmailalias.sh](https://github.com/spacecowboy/docker-post/blob/master/addmailalias.sh)
+
+```
+./addmailalias.sh batman example1.com alice example2.org
+./addmailalias.sh superman example1.com bob example1.com
+```
+
+## Start the rest of the containers
+
+With atleast one user added to the database, you are now ready to
+start the rest of the containers.
+
 ### Start dovecot
 
-Dovecot is the IMAP/POP/Authentication server and is run with:
+Edit
+[systemd/dockerpost-postgres.service](https://github.com/spacecowboy/docker-post/tree/master/systemd/dockerpost-dovecot.service)
+and set the primary `--hostname` for your server, as well as its
+domain as `-e mydomain`.
+
+Pick a suitable location to store the mails instead of `/root/mail`
+and finally, set the correct path to your certificates. The best way
+is to use [LetsEncrypt](letsencrypt.org) to generate a certificate for
+all domains you intend to host email for. If you really don't want
+to however (for testing for example), you can just omit those volumes
+and use dovecot's self-signed one.
+
+Then enable and start it:
 
 ```
-docker run --rm --name=dovecot \
-  --net=mail_network \
-  --hostname=mail.example.com \
-  -e mydomain=example.com \
-  -p 110:110 \
-  -p 995:995 \
-  -p 143:143 \
-  -p 993:993 \
-  -p 4190:4190 \
-  -v /root/mail:/var/vmail \
-  -v /etc/letsencrypt/live/example.com/privkey.pem:/etc/ssl/private/dovecot.pem \
-  -v /etc/letsencrypt/live/example.com/fullchain.pem:/etc/ssl/certs/dovecot.pem \
-  -t dockerpost/dovecot
+cp systemd/dockerpost-dovecot.service /etc/systemd/system/
+systemctl enable dockerpost-dovecot.service
+systemctl start dockerpost-dovecot.service
 ```
-
-Dovecot needs to know the primary hostname it is providing mail at,
-this is done with `--hostname` for the FQDN, and `-e mydomain` for
-just the domain level.
-
-The ports are all optional to expose, depending on what services you
-want. Note that dovecot will require TLS on all ports. Imap is
-provided on ports 143 and 993. Pop is provided on ports 110
-and 995. Port 4190 is for
-[ManageSieve](http://wiki2.dovecot.org/Pigeonhole/ManageSieve) to
-allow users to configure server-side scripting.
-
-You should override the default certificates with your own. The best
-way is to use [LetsEncrypt](letsencrypt.org) to generate a certificate
-for all domains you intend to host email for.
 
 ### Start amavis
 
-Amavis provides spam filtering and antivirus checking.
+Amavis provides spam filtering and antivirus checking. Edit
+[systemd/dockerpost-postgres.service](https://github.com/spacecowboy/docker-post/tree/master/systemd/dockerpost-amavis.service)
+and set the primary `--hostname` for your server.
+
+Amavis needs access to the mail directory (replace `/root/mail`) so
+that SpamAssassin can train on Spam and Ham. To remember what has been
+learned from the training a directory for the spam database is also
+specified (replace `/root/sa_db`).
+
+Enable and start it:
 
 ```
-docker run --rm --name=amavis \
-      --net=mail_network \
-      --hostname=mail.example.com \
-      -t dockerpost/amavis
+cp systemd/dockerpost-amavis.service /etc/systemd/system/
+systemctl enable dockerpost-amavis.service
+systemctl start dockerpost-amavis.service
 ```
 
-It requires nothing more than the `--hostname` to be specified.
+To setup a daily task to learn what is spam and what is ham, also
+enable the timer job:
+
+```
+cp systemd/dockerpost-learnspam.service /etc/systemd/system/
+cp systemd/dockerpost-learnspam.timer /etc/systemd/system/
+systemctl enable dockerpost-learnspam.timer
+systemctl start dockerpost-learnspam.timer
+```
 
 ### Start postfix
 
 Postfix is the SMTP server, delivering outgoing mail and accepting
 incoming mail (after verification).
 
+Edit
+[systemd/dockerpost-postgres.service](https://github.com/spacecowboy/docker-post/tree/master/systemd/dockerpost-amavis.service)
+and set your primary hostname in `--hostname` and `-e myhostname` as well as just the domain in `-e mydomain`.
+
+Then specify a location to store your dkim keys instead of `/root/opendkim-keys`. Note that the container will print what you should put in your DNS records on startup. You can view it with:
+
+    journalctl -a -u dockerpost-postfix.service
+
+Set the same certificate path as you did for dovecot (or omit them
+during testing). Then enable and start it:
+
 ```
-docker run --rm --name=postfix \
-  --net=mail_network \
-  --hostname=mail.example.com \
-  -e myhostname=mail.example.com \
-  -e mydomain=example.com \
-  -p 25:25 \
-  -p 587:587 \
-  -v /root/opendkim-keys:/etc/opendkim/keys \
-  -v /etc/letsencrypt/live/example.com/privkey.pem:/etc/ssl/private/ssl-cert-snakeoil.key \
-  -v /etc/letsencrypt/live/example.com/fullchain.pem:/etc/ssl/certs/ssl-cert-snakeoil.pem \
-  -t dockerpost/postfix
+cp systemd/dockerpost-postfix.service /etc/systemd/system/
+systemctl enable dockerpost-postfix.service
+systemctl start dockerpost-postfix.service
 ```
-
-The hostname must be specified with `--hostname` and also as `-e
-myhostname`, and the domain as `-e mydomain`.
-
-Port 25 must be exposed if you want to receive mail from the
-internet. It only handles incoming email and will reject any emails
-which are not addressed to a known user. Emails which are addressed to
-a known user are then handed off to spam filtering. Port 587 handles
-outgoing e-mail and requires a connection with TLS and a user/password
-login. Since only authorized users can send e-mail to the internet,
-these are not subjected to spam filtering but instead they are signed
-with DKIM.
-
-The first volume to specify is where to save the DKIM-keys. You should
-change `/root/opendkim-keys` to a suitable location on your
-machine. This allows the same key to be reused, which we want since
-you should publish the public key in your DNS records. On startup the
-container will print what the DNS record should contain.
-
-The other volumes are to override the default certificate with your
-own valid one to get proper TLS support without warnings.
-
-### Add some users to the database
-
-Some handy scripts are included to deal with the database. To add a domain,
-
-    ./addmaildomain.sh example.com
-
-Then a user account
-
-    ./addmailuser.sh bob example.com yourverysecretpassword
-
-If desired, a user can also be mapped to one or several aliases:
-
-    ./addmailalias.sh smith example.com bob example.com
-
-Note that the fields are specified as foreign keys and with suitable
-unique constraints in the database. For that reason, you have to add
-the domain before the user account. If you delete a domain, then all
-connected user accounts and aliases are also deleted.
-
-Passwords are stored hashed and salted with `SHA512-CRYPT`.
 
 ### Test it!
 
 You should now have a functioning mail setup (assuming your firewall
 accepts the right ports of course). You can test it quickly using telnet.
 
-To see if postfix is functioning type the following in order
+To see if postfix is functioning type something like the following in order
 
 ```
 telnet localhost 25
@@ -263,9 +241,11 @@ subject: hi this is a test
 Just testing
 
 .
+
+quit
 ```
 
 Note the final `.` to mark the end of the message. Now check the
 output from postfix. The first time, postfix should reject the message
-(part of spam filtering). Do it a second time and it should accept it
-and deliver it to amavis and then dovecot.
+(part of spam filtering process). Do it a second time and it should
+accept it and deliver it to amavis and then dovecot.
