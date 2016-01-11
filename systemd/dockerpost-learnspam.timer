@@ -1,0 +1,8 @@
+[Unit]
+Description=Timer for training SpamAssassin's Bayesian filter
+
+[Timer]
+OnCalendar=daily
+
+[Install]
+WantedBy=timers.target

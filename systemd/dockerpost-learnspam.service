@@ -1,0 +1,9 @@
+[Unit]
+Description=Training service for SpamAssassin's Bayesian filter
+# Requirements
+Requires=docker.service dockerpost-amavis.service
+After=docker.service dockerpost-amavis.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker exec -t amavis /usr/local/bin/learn.sh
