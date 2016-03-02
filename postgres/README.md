@@ -11,7 +11,7 @@ docker run --rm --name=postgres \
   -e PGUSER=postgres \
   -e PGPASSWORD=R12e8H0Xam \
   -v /root/maildb:/var/lib/postgresql/data \
-  postgres
+  postgres:9.4
 ```
 
 This just starts a copy of the official Postgres container. The

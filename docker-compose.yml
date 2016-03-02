@@ -1,0 +1,92 @@
+version: '2'
+services:
+  # Database to store usernames, hashed passwords, aliases, and domains.
+  postgres:
+    image: postgres:9.4
+    networks:
+      - mail_network
+    volumes:
+      - /root/dockerpost/maildb:/var/lib/postgresql/data
+    environment:
+      # Credentials used by utility scripts to add users, domains, etc
+      - PGUSER=postgres
+      - PGPASSWORD=R12e8H0Xam
+      # Postgres default admin user credentials
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=R12e8H0Xam
+
+  # IMAP/POP server so you can read your mail
+  dovecot:
+    tty: true
+    hostname: mail.example.com
+    depends_on:
+      - postgres
+    image: dockerpost/dovecot
+    networks:
+      - mail_network
+    volumes:
+      # Will store emails in this directory
+      - /root/dockerpost/mail:/var/vmail
+      - /etc/letsencrypt/live/example.com/privkey.pem:/etc/ssl/private/dovecot.pem
+      - /etc/letsencrypt/live/example.com/fullchain.pem:/etc/ssl/certs/dovecot.pem
+    ports:
+      # YAML will parse numbers in the format xx:yy as sexagesimal
+      # (base 60). For this reason, we recommend always explicitly
+      # specifying your port mappings as strings.
+      #
+      # POP (unencrypted)
+      - "110:110"
+      # POP (encrypted)
+      - "995:995"
+      # IMAP (can still use STARTLS on this port)
+      - "143:143"
+      # IMAP (encrypted)
+      - "993:993"
+      # ManageSieve (server side filter scripts)
+      - "4190:4190"
+    environment:
+      - mydomain=example.com
+
+
+  # Antivirus scanner
+  amavis:
+    tty: true
+    hostname: mail.example.com
+    image: dockerpost/amavis
+    networks:
+      - mail_network
+    volumes:
+      # Need to be able to read mails to train the spam filter. Should
+      # match configuration in dovecot
+      - /root/dockerpost/mail:/var/vmail
+      - /root/dockerpost/spamdb:/var/spamassassin/bayes_db
+
+  # Handles sending/receiving mails. If mails are not spam, they are
+  # handed off to dovecot.
+  postfix:
+    tty: true
+    hostname: mail.example.com
+    depends_on:
+      - postgres
+      - dovecot
+    image: dockerpost/postfix
+    networks:
+      - mail_network
+    volumes:
+      - /root/dockerpost/opendkim-keys:/etc/opendkim/keys
+      - /etc/letsencrypt/live/example.com/privkey.pem:/etc/ssl/private/ssl-cert-snakeoil.key
+      - /etc/letsencrypt/live/example.com/fullchain.pem:/etc/ssl/certs/ssl-cert-snakeoil.pem
+    ports:
+      # SMTP, mandatory to receive mail from the internet
+      - "25:25"
+      # SMTP (encrypted)
+      - "587:587"
+      # SMTP (encrypted)
+      - "465:465"
+    environment:
+      - myhostname=mail.example.com
+      - mydomain=example.com
+
+networks:
+  mail_network:
+    driver: bridge
