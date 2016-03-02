@@ -6,6 +6,11 @@ Requires=docker.service
 After=docker.service
 
 [Service]
+# Name passed to docker compose
+Environment=APP='postgres'
+# Where the docker-compose.yml file is
+WorkingDirectory=/root/docker-post/
+
 # Let processes take awhile to start up (for first run Docker containers)
 TimeoutStartSec=0
 
@@ -15,20 +20,16 @@ KillMode=none
 
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
-ExecStartPre=-/usr/bin/docker network create mail_network
-ExecStartPre=-/usr/bin/docker kill postgres
-ExecStartPre=-/usr/bin/docker rm postgres
-ExecStart=/usr/bin/docker run --rm --name=postgres \
-      --net=mail_network \
-      -e POSTGRES_PASSWORD=R12e8H0Xam \
-      -e POSTGRES_USER=postgres \
-      -e PGUSER=postgres \
-      -e PGPASSWORD=R12e8H0Xam \
-      -v /root/maildb:/var/lib/postgresql/data \
-      postgres:9.4
+ExecStartPre=-/usr/local/bin/docker-compose kill $APP
+ExecStartPre=-/usr/local/bin/docker-compose rm -f $APP
+ExecStartPre=/usr/local/bin/docker-compose pull $APP
+ExecStartPre=/usr/local/bin/docker-compose build $APP
+
+# Start
+ExecStart=/usr/local/bin/docker-compose up --force-recreate --no-deps $APP
 
 # Stop
-ExecStop=/usr/bin/docker stop postgres
+ExecStop=/usr/local/bin/docker-compose stop $APP
 
 [Install]
 WantedBy=multi-user.target

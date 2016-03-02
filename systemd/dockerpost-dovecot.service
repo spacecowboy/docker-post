@@ -6,6 +6,11 @@ Requires=docker.service dockerpost-postgres.service
 After=docker.service dockerpost-postgres.service
 
 [Service]
+# Name passed to docker compose
+Environment=APP='dovecot'
+# Where the docker-compose.yml file is
+WorkingDirectory=/root/docker-post/
+
 # Let processes take awhile to start up (for first run Docker containers)
 TimeoutStartSec=0
 
@@ -15,25 +20,16 @@ KillMode=none
 
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
-ExecStartPre=-/usr/bin/docker network create mail_network
-ExecStartPre=-/usr/bin/docker kill dovecot
-ExecStartPre=-/usr/bin/docker pull dockerpost/dovecot
-ExecStart=/usr/bin/docker run --rm --name=dovecot \
-      --net=mail_network \
-      --hostname=mail.example.com \
-      -e mydomain=example.com \
-      -p 110:110 \
-      -p 995:995 \
-      -p 143:143 \
-      -p 993:993 \
-      -p 4190:4190 \
-      -v /root/mail:/var/vmail \
-      -v /etc/letsencrypt/live/example.com/privkey.pem:/etc/ssl/private/dovecot.pem \
-      -v /etc/letsencrypt/live/example.com/fullchain.pem:/etc/ssl/certs/dovecot.pem \
-      -t dockerpost/dovecot
+ExecStartPre=-/usr/local/bin/docker-compose kill $APP
+ExecStartPre=-/usr/local/bin/docker-compose rm -f $APP
+ExecStartPre=/usr/local/bin/docker-compose pull $APP
+ExecStartPre=/usr/local/bin/docker-compose build $APP
+
+# Start
+ExecStart=/usr/local/bin/docker-compose up --force-recreate --no-deps $APP
 
 # Stop
-ExecStop=/usr/bin/docker stop dovecot
+ExecStop=/usr/local/bin/docker-compose stop $APP
 
 [Install]
 WantedBy=multi-user.target

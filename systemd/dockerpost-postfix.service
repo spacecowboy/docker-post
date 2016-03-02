@@ -5,6 +5,11 @@ Requires=docker.service dockerpost-dovecot.service dockerpost-amavis.service
 After=docker.service dockerpost-dovecot.service dockerpost-amavis.service
 
 [Service]
+# Name passed to docker compose
+Environment=APP='postfix'
+# Where the docker-compose.yml file is
+WorkingDirectory=/root/docker-post/
+
 # Let processes take awhile to start up (for first run Docker containers)
 TimeoutStartSec=0
 
@@ -14,25 +19,16 @@ KillMode=none
 
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
-ExecStartPre=-/usr/bin/docker network create mail_network
-ExecStartPre=-/usr/bin/docker kill postfix
-ExecStartPre=-/usr/bin/docker rm postfix
-ExecStartPre=-/usr/bin/docker pull dockerpost/postfix
-ExecStart=/usr/bin/docker run --rm --name=postfix \
-      --hostname=mail.example.com \
-      --net=mail_network \
-      -e myhostname=mail.example.com \
-      -e mydomain=example.com \
-      -p 25:25 \
-      -p 587:587 \
-      -p 465:465 \
-      -v /root/opendkim-keys:/etc/opendkim/keys \
-      -v /etc/letsencrypt/live/example.com/privkey.pem:/etc/ssl/private/ssl-cert-snakeoil.key \
-      -v /etc/letsencrypt/live/example.com/fullchain.pem:/etc/ssl/certs/ssl-cert-snakeoil.pem \
-      -t dockerpost/postfix
+ExecStartPre=-/usr/local/bin/docker-compose kill $APP
+ExecStartPre=-/usr/local/bin/docker-compose rm -f $APP
+ExecStartPre=/usr/local/bin/docker-compose pull $APP
+ExecStartPre=/usr/local/bin/docker-compose build $APP
+
+# Start
+ExecStart=/usr/local/bin/docker-compose up --force-recreate --no-deps $APP
 
 # Stop
-ExecStop=/usr/bin/docker stop postfix
+ExecStop=/usr/local/bin/docker-compose stop $APP
 
 [Install]
 WantedBy=multi-user.target
