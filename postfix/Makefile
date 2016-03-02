@@ -1,7 +1,14 @@
-build:
+.DEFAULT_GOAL := help
+
+.PHONY: help build run push shell test-domain test-alias test-mailbox
+
+help: ## Print a description of all available targets
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+build:  ## Build the container image (dockerpost/postfix)
 	sudo docker build --tag=dockerpost/postfix .
 
-run:
+run: ## Run a container with the minimal configuration
 	sudo docker run --rm --name=postfix \
 	  --hostname=mail.example.com \
 	  --net=mail_network \
@@ -15,10 +22,10 @@ run:
 	  -v /etc/letsencrypt/live/example.com/fullchain.pem:/etc/ssl/certs/ssl-cert-snakeoil.pem \
 	  -t dockerpost/postfix
 
-push:
+push: ## Push a new version of the image to DockerHub
 	sudo docker push dockerpost/postfix
 
-shell:
+shell: ## Open a bash session inside the 'postfix' container
 	sudo docker exec -it postfix /bin/bash
 
 test-domain:
