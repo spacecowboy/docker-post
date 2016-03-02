@@ -11,5 +11,5 @@ elif [ $# -eq 2 ]; then
   SQL="SELECT * FROM alias WHERE aka_name='$1' AND aka_domain='$2'"
 fi
 
-sudo docker exec -it postgres \
+sudo docker exec -it $(docker-compose ps -q postgres) \
      psql mail -c "$SQL"

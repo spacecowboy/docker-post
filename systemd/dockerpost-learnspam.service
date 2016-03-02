@@ -9,5 +9,4 @@ Type=oneshot
 # Where the docker-compose.yml file is
 WorkingDirectory=/root/docker-post/
 
-#ExecStart=/usr/bin/docker exec -t amavis /usr/local/bin/learn.sh
-ExecStart=/usr/local/bin/docker-compose run --no-deps amavis /usr/local/bin/learn.sh
+ExecStart=/usr/bin/docker exec -t $(/usr/local/bin/docker-compose ps -q amavis) /usr/local/bin/learn.sh

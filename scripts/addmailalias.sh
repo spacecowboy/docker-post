@@ -18,6 +18,5 @@ SQL="INSERT INTO alias (name, domain, aka_name, aka_domain) VALUES ('$ANAME', '$
 echo "$SQL"
 
 # Insert into database
-sudo docker exec -it postgres \
+sudo docker exec -it $(docker-compose ps -q postgres) \
      psql mail -c "$SQL"
-

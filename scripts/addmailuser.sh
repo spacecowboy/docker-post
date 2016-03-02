@@ -35,5 +35,5 @@ fi
 echo "$SQL"
 
 # Insert or Update into database
-sudo docker exec -it postgres \
+sudo docker exec -it $(docker-compose ps -q postgres) \
      psql mail -c "$SQL"

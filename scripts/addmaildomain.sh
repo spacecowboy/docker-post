@@ -29,5 +29,5 @@ fi
 echo "$SQL"
 
 # Run SQL
-sudo docker exec -it postgres \
+sudo docker exec -it $(docker-compose ps -q postgres) \
      psql mail -c "$SQL"
