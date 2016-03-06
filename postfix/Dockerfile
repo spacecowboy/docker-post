@@ -26,6 +26,7 @@ RUN ln -snf /etc/ssl /var/spool/postfix/etc/ssl
 # your dkim key across restarts.
 RUN mkdir -p /etc/opendkim
 RUN mkdir -p /etc/opendkim/keys
+VOLUME /etc/opendkim/keys
 COPY SigningTable /etc/opendkim/SigningTable
 COPY TrustedHosts /etc/opendkim/TrustedHosts
 # Copy opendkim config files
