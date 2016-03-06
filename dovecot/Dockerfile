@@ -28,6 +28,8 @@ COPY globalsieve /etc/dovecot/scripts/default.sieve
 # make mail dirs
 RUN mkdir -p /var/vmail
 
+VOLUME /var/vmail
+
 COPY run.sh /usr/local/bin/run.sh
 
 CMD /usr/local/bin/run.sh

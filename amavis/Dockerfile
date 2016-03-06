@@ -33,6 +33,7 @@ RUN chown amavis:amavis /var/log/amavis.log
 
 # Prepare spam filter database location
 RUN mkdir -p /var/spamassassin/bayes_db
+VOLUME /var/spamassassin/bayes_db
 
 # Copy the config file to enable spam and antivirus checking
 COPY 15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode
