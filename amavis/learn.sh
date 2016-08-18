@@ -13,3 +13,7 @@ sudo -u amavis /usr/bin/sa-learn --ham /var/vmail/*/*/mail/.NotJunk/{cur,new}/*
 
 # Restore permissions
 chmod -R 700 /var/vmail/*/*
+
+# Update spam assassin rules
+echo "Updating spam assassin rules..."
+sa-update
