@@ -1,4 +1,4 @@
-# dockerpost/dovecot
+# spacecowboy/dovecot
 
 Dovecot is the IMAP/POP/Authentication server and is run with:
 
@@ -15,7 +15,7 @@ docker run --rm --name=dovecot \
   -v /root/mail:/var/vmail \
   -v /etc/letsencrypt/live/example.com/privkey.pem:/etc/ssl/private/dovecot.pem \
   -v /etc/letsencrypt/live/example.com/fullchain.pem:/etc/ssl/certs/dovecot.pem \
-  -t dockerpost/dovecot
+  -t spacecowboy/dovecot
 ```
 
 Dovecot needs to know the primary hostname it is providing mail at,

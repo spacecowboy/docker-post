@@ -1,4 +1,4 @@
-# dockerpost/postfix
+# spacecowboy/postfix
 
 Postfix is the SMTP server, delivering outgoing mail and accepting
 incoming mail (after verification).
@@ -14,7 +14,7 @@ docker run --rm --name=postfix \
   -v /root/opendkim-keys:/etc/opendkim/keys \
   -v /etc/letsencrypt/live/example.com/privkey.pem:/etc/ssl/private/ssl-cert-snakeoil.key \
   -v /etc/letsencrypt/live/example.com/fullchain.pem:/etc/ssl/certs/ssl-cert-snakeoil.pem \
-  -t dockerpost/postfix
+  -t spacecowboy/postfix
 ```
 
 The hostname must be specified with `--hostname` and also as `-e

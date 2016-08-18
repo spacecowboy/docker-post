@@ -1,4 +1,4 @@
-# dockerpost/amavis
+# spacecowboy/amavis
 
 Amavis handles spam filtering and antivirus scanning. Run it with
 
@@ -8,7 +8,7 @@ docker run --rm --name=amavis \
       --hostname=mail.example.com \
       -v /root/mail:/var/vmail \
       -v /root/sa_db:/var/spamassassin/bayes_db \
-      -t dockerpost/amavis
+      -t spacecowboy/amavis
 ```
 
 where `--hostname` specifies the hostname of your mail server. Specify where your mails are stored instead of `/root/mail` so that spam training can be done. The results of the training is stored in a database which you want to save between runs probably, so set a suitable location for that also instead of `/root/sa_db`.
